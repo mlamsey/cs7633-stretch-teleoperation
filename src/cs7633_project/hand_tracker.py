@@ -38,7 +38,19 @@ def _get_extended_fingers(estimate, threshold=0.25):
     return extended
 
 ############################################################
-class HandTracker:
+class HandAnalyzer:
+    # contains methods for analyzing the results of a hand pose estimate
+    def __init__(self) -> None:
+        pass
+
+    def get_extended_fingers(self, hand_prediction_results) -> List[LANDMARK]:
+        landmarks = hand_prediction_results.multi_hand_landmarks
+        if landmarks is not None:
+            return _get_extended_fingers(landmarks)
+        return None
+
+class HandTracker(HandAnalyzer):
+    # contains interface with a webcam and visualization methods
     def __init__(self) -> None:
         self.capture_device = cv2.VideoCapture(0)
         self.hands_model = mp_hands.Hands(
@@ -88,9 +100,6 @@ class HandTracker:
         hand_prediction_results = self.hands_model.process(image)
         image = self.annotate_hands(image, hand_prediction_results)
         return image, hand_prediction_results
-
-    def get_extended_fingers(self, hand_prediction_results) -> List[LANDMARK]:
-        return _get_extended_fingers(hand_prediction_results)
 
     def run(self):
         while self.capture_device.isOpened():
