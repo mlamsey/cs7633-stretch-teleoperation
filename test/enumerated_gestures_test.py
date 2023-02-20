@@ -23,6 +23,24 @@ def tip2wrist_dist(tip: LANDMARK, estimate):
     return dist
 
 
+def get_extended_fingers(estimate, threshold=0.25):
+    tips = [LANDMARK.THUMB_TIP,
+        LANDMARK.INDEX_FINGER_TIP,
+        LANDMARK.MIDDLE_FINGER_TIP,
+        LANDMARK.RING_FINGER_TIP,
+        LANDMARK.PINKY_TIP]
+
+    distances = [tip2wrist_dist(tip, estimate) for tip in tips]
+
+    extended = []
+    for tip, distance in zip(tips, distances):
+        if distance > threshold:
+            extended.append(tip)
+
+    # print([v.value for v in extended])
+    return extended
+
+
 ############################################################
 # main
 
@@ -49,7 +67,8 @@ def main():
             image.flags.writeable = True
             image = cv2.cvtColor(image, cv2.COLOR_RGB2BGR)
             if results.multi_hand_landmarks:
-                tip2wrist_dist(LANDMARK.INDEX_FINGER_TIP, results.multi_hand_landmarks)
+                # tip2wrist_dist(LANDMARK.INDEX_FINGER_TIP, results.multi_hand_landmarks)
+                get_extended_fingers(results.multi_hand_landmarks)
                 for hand_landmarks in results.multi_hand_landmarks:
                     mp_drawing.draw_landmarks(
                         image,
