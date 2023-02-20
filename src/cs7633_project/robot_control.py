@@ -30,6 +30,7 @@ class RobotControl:
                 finger = extended_fingers[0]
                 if finger == LANDMARK.INDEX_FINGER_TIP:
                     action = ManipulationControlAction.FORWARD
+                    # action = ManipulationControlAction.UP
                 elif finger == LANDMARK.MIDDLE_FINGER_TIP:
                     action = ManipulationControlAction.LEFT
                 elif finger == LANDMARK.RING_FINGER_TIP:
@@ -37,6 +38,10 @@ class RobotControl:
                 elif finger == LANDMARK.PINKY_TIP:
                     action = ManipulationControlAction.RIGHT
                 elif finger == LANDMARK.THUMB_TIP:
-                    action = ManipulationControlAction.GRASP
+                    # action = ManipulationControlAction.GRASP
+                    action = ManipulationControlAction.DOWN
+            elif len(extended_fingers) == 2:
+                action = ManipulationControlAction.UP
         
         print(action.name)
+        return action
