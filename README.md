@@ -3,7 +3,7 @@
 Course Project for CS7633 Human-Robot Interaction at the Georgia Institute of Technology
 
 ### Team Members
-Matthew Lamsey, Houriyeh Madjitehran, Chuxuan (Sophie) Yang
+Matthew Lamsey, Houriyeh Majditehran, Chuxuan (Sophie) Yang
 
 # Description
 
