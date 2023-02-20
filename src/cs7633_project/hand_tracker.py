@@ -52,7 +52,7 @@ class HandAnalyzer:
 class HandTracker(HandAnalyzer):
     # contains interface with a webcam and visualization methods
     def __init__(self) -> None:
-        self.capture_device = cv2.VideoCapture(0)
+        self.capture_device = cv2.VideoCapture(6)  # NOTE: the arg changes. 0 for desktop, 6 for stretch
         self.hands_model = mp_hands.Hands(
             model_complexity=0,
             min_detection_confidence=0.5,
