@@ -1,8 +1,8 @@
 <?xml version="1.0"?>
 <package format="2">
-  <name>cs7633-project</name>
+  <name>cs7633_project</name>
   <version>0.0.0</version>
-  <description>The cs7633-project package</description>
+  <description>The cs7633_project package</description>
 
   <!-- One maintainer tag required, multiple allowed, one person per tag -->
   <!-- Example:  -->
