@@ -40,10 +40,10 @@ class StretchControlNode(hm.HelloNode):
         self.joint_states_lock = threading.Lock()
 
         # config
-        self.LIFT_INCREMENT = 0.05  # m
+        self.LIFT_INCREMENT = 0.025  # m
         self.EXTENSION_INCREMENT = 0.025  # m
         self.YAW_INCREMENT = 0.025  # rad
-        self.BASE_INCREMENT = 0.05  # m
+        self.BASE_INCREMENT = 0.025  # m
 
         # state
         self.joint_positions = None
@@ -134,29 +134,6 @@ class StretchControlNode(hm.HelloNode):
     def main(self):
         hm.HelloNode.main(self, 'stretch_controller', 'stretch_namespace', wait_for_first_pointcloud=False)
         rospy.spin()
-        # self.rate = rospy.Rate(10.)
-
-        # while not rospy.is_shutdown():
-        #     _, result = self.hand_tracker.get_frame()
-        #     action = self.controller.get_action(result)
-        #     if self.joint_positions is not None:
-        #         pose = self.joint_positions
-        #         if action == ManipulationControlAction.UP:
-        #             pose["joint_lift"] += self.LIFT_INCREMENT
-        #         elif action == ManipulationControlAction.DOWN:
-        #             pose["joint_lift"] -= self.LIFT_INCREMENT
-        #         elif action == ManipulationControlAction.FORWARD:
-        #             pose["wrist_extension"] += self.EXTENSION_INCREMENT
-        #         elif action == ManipulationControlAction.BACKWARD:
-        #             pose["wrist_extension"] -= self.EXTENSION_INCREMENT
-        #         elif action == ManipulationControlAction.LEFT:
-        #             pose = {"translate_mobile_base": self.BASE_INCREMENT}  # TODO: wait for this to finish
-        #         elif action == ManipulationControlAction.RIGHT:
-        #             pose = {"translate_mobile_base": -self.BASE_INCREMENT}  # TODO: wait for this to finish
-                
-        #         self.move(pose)
-                
-        #     self.rate.sleep()
 
 if __name__ == '__main__':
     StretchControlNode().main()
