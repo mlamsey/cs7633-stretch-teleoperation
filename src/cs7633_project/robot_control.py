@@ -80,3 +80,26 @@ class HandControl(RobotControl):
         
         self.debug_print(action.name)
         return action
+    
+    def get_drive_action(self, user_input):
+        return super().get_drive_action(user_input)
+
+class XboxControl(RobotControl):
+    def __init__(self, debug) -> None:
+        super().__init__(debug)
+
+    def get_manipulation_action(self, user_input):
+        return super().get_manipulation_action(user_input)
+    
+    def get_drive_action(self, user_input):
+        return super().get_drive_action(user_input)
+    
+class UIControl(RobotControl):
+    def __init__(self, debug) -> None:
+        super().__init__(debug)
+
+    def get_manipulation_action(self, user_input):
+        return super().get_manipulation_action(user_input)
+    
+    def get_drive_action(self, user_input):
+        return super().get_drive_action(user_input)
