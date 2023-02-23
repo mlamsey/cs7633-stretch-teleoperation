@@ -43,10 +43,10 @@ class RobotControl(ABC):
         if self.debug:
             print(msg)
 
-    def get_manipulation_action(self, user_input):
+    def get_manipulation_action(self, user_input) -> ManipulationControlAction:
         return ManipulationControlAction.IDLE
     
-    def get_drive_action(self, user_input):
+    def get_drive_action(self, user_input) -> DriveControlAction:
         return DriveControlAction.IDLE
 
 ############################################################
@@ -56,7 +56,7 @@ class HandControl(RobotControl):
         super().__init__(debug)
         self.hand_analyzer = HandAnalyzer()
 
-    def get_manipulation_action(self, user_input):
+    def get_manipulation_action(self, user_input) -> ManipulationControlAction:
         action = ManipulationControlAction.IDLE
 
         extended_fingers = self.hand_analyzer.get_extended_fingers(user_input)
@@ -81,25 +81,69 @@ class HandControl(RobotControl):
         self.debug_print(action.name)
         return action
     
-    def get_drive_action(self, user_input):
+    def get_drive_action(self, user_input) -> DriveControlAction:
         return super().get_drive_action(user_input)
 
 class XboxControl(RobotControl):
     def __init__(self, debug) -> None:
         super().__init__(debug)
 
-    def get_manipulation_action(self, user_input):
+    def get_manipulation_action(self, user_input) -> ManipulationControlAction:
         return super().get_manipulation_action(user_input)
     
-    def get_drive_action(self, user_input):
+    def get_drive_action(self, user_input) -> DriveControlAction:
         return super().get_drive_action(user_input)
     
 class UIControl(RobotControl):
     def __init__(self, debug) -> None:
         super().__init__(debug)
 
-    def get_manipulation_action(self, user_input):
+    def get_manipulation_action(self, user_input) -> ManipulationControlAction:
         return super().get_manipulation_action(user_input)
     
-    def get_drive_action(self, user_input):
+    def get_drive_action(self, user_input) -> DriveControlAction:
+        return super().get_drive_action(user_input)
+
+class KeyboardControl(RobotControl):
+    def __init__(self, debug) -> None:
+        super().__init__(debug)
+
+        self.manipulation_keyboard_mapping = {
+            "u": ManipulationControlAction.UP,
+            "d": ManipulationControlAction.DOWN,
+            "l": ManipulationControlAction.LEFT,
+            "r": ManipulationControlAction.RIGHT,
+            "f": ManipulationControlAction.FORWARD,
+            "b": ManipulationControlAction.BACKWARD,
+        }
+
+        self.drive_keyboard_mapping = {
+            "l": DriveControlAction.TURN_CCW,
+            "r": DriveControlAction.TURN_CW,
+            "f": DriveControlAction.FORWARD,
+            "b": DriveControlAction.BACKWARD,
+        }
+
+    def print_manipulation_menu(self):
+        print(" ===== MANIPULATION MENU ===== ")
+        print(" (U) Up          (D) Down ")
+        print(" (L) Left        (R) Right")
+        print(" (F) Forwards    (B) Backwards ")
+
+    def print_drive_menu(self):
+        print(" ===== DRIVE MENU ===== ")
+        print(" (L) Turn Left    (R) Turn Right ")
+        print(" (F) Forwards     (B) Backwards ")
+
+    def get_selection():
+        return input("Enter a selection: ").lower()
+
+    def get_manipulation_action(self, user_input) -> ManipulationControlAction:
+        valid_entries, _ = self.manipulation_keyboard_mapping.items()
+        if user_input in valid_entries:
+            return self.manipulation_keyboard_mapping[user_input]
+        else:
+            return ManipulationControlAction.IDLE
+    
+    def get_drive_action(self, user_input) -> DriveControlAction:
         return super().get_drive_action(user_input)
