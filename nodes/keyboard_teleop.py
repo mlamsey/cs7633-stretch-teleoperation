@@ -5,11 +5,18 @@ import numpy as np
 # src
 from cs7633_project.robot_control import KeyboardControl, ControllerState
 
+# more ros
+from cs7633_project.srv import ControlAction
+
 class KeyboardTeleoperationNode(KeyboardControl):
     def __init__(self) -> None:
         super().__init__()
         rospy.init_node("keyboard_teleop", anonymous=True)
         self.rate = rospy.Rate(10.)
+
+        # srv
+        self.change_robot_pose_proxy = rospy.ServiceProxy(
+            "/hri/control_action", ControlAction)
 
     def main(self):
         while not rospy.is_shutdown():
@@ -28,7 +35,10 @@ class KeyboardTeleoperationNode(KeyboardControl):
             elif self.controller_state == ControllerState.DRIVE:
                 action = self.get_drive_action(ui)
 
-            print(action)
+            # set up service call
+            action = int(action.value)
+            state = int(self.controller_state.value)
+            self.change_robot_pose_proxy(action, state)
 
             self.rate.sleep()
 
