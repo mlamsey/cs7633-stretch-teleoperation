@@ -1,15 +1,22 @@
 #!/usr/bin/env python3
 import rospy
+import numpy as np
 
 # Stretch Imports
 STRETCH = True
 if STRETCH:
     import hello_helpers.hello_misc as hm
+    from sensor_msgs.msg import JointState
 
-# 
+# src
 from cs7633_project.robot_control import RobotControl, ManipulationControlAction
 from cs7633_project.hand_tracker import HandTracker
 
+# helpers
+def truncate(value, range):
+    return np.min([np.max(value, range[0]), range[1]])
+
+# objects
 class RobotControlNode:
     def __init__(self) -> None:
         rospy.init_node("robot_control", anonymous=True)
@@ -27,9 +34,63 @@ class StretchControlNode(hm.HelloNode):
     def __init__(self):
         hm.HelloNode.__init__(self)
 
+        # config
+        self.LIFT_INCREMENT = 0.05  # m
+        self.EXTENSION_INCREMENT = 0.025  # m
+        self.YAW_INCREMENT = 0.025  # rad
+        self.BASE_INCREMENT = 0.05  # m
+
+        # state
+        self.joint_positions = None
+
+        # objects
         self.controller = RobotControl()
         self.hand_tracker = HandTracker()
 
+        # subscribers
+        self.joint_states_subscriber = rospy.Subscriber(
+            "/stretch/joint_states", JointState, self.callback_joint_state
+        )
+
+    # callbacks
+    def callback_joint_state(self, data):
+        joint_states = data.data
+
+        # extract joint positions
+        joint_names = ["joint_lift",
+                       "wrist_extension",
+                       "joint_wrist_yaw"]
+        joint_positions = {}
+        for joint_name in joint_names:
+            joint_positions[joint_name] = joint_states.position[joint_states.name.index(joint_name)]
+
+        # save
+        # self.joint_states_raw = joint_states
+        self.joint_positions = joint_positions
+
+    def move(self, pose, return_before_done=False):
+        # move while enforcing joint limits
+        # limits
+        LIFT_LIMITS = [0.05, 1.05]
+        EXTENSION_LIMITS = [0.025, 0.45]
+        YAW_LIMITS = 0.75 * [-np.pi, np.pi]
+        GRASP_LIMITS = [-0.4, 1.0]  # TODO: check these
+
+        # truncate
+        for key, value in pose.items():
+            if key == "joint_lift":
+                pose[key] = truncate(value, LIFT_LIMITS)
+            elif key == "wrist_extension":
+                pose[key] = truncate(value, EXTENSION_LIMITS)
+            elif key == "joint_wrist_yaw":
+                pose[key] = truncate(value, YAW_LIMITS)
+            elif key == "joint_gripper_finger_left":
+                pose[key] = truncate(value, GRASP_LIMITS)
+        
+        # go
+        self.move_to_pose(pose, return_before_done=return_before_done)
+
+    # main
     def main(self):
         hm.HelloNode.main(self, 'stretch_controller', 'stretch_namespace', wait_for_first_pointcloud=False)
         self.rate = rospy.Rate(10.)
@@ -37,19 +98,23 @@ class StretchControlNode(hm.HelloNode):
         while not rospy.is_shutdown():
             _, result = self.hand_tracker.get_frame()
             action = self.controller.get_action(result)
-            if action == ManipulationControlAction.UP:
-                self.move_to_pose({"joint_lift": 0.65})
-                print('e')
-            elif action == ManipulationControlAction.DOWN:
-                self.move_to_pose({"joint_lift": 0.45})
-            elif action == ManipulationControlAction.FORWARD:
-                self.move_to_pose({"wrist_extension": 0.35})
-            elif action == ManipulationControlAction.BACKWARD:
-                self.move_to_pose({"wrist_extension": 0.05})
-            elif action == ManipulationControlAction.LEFT:
-                self.move_to_pose({"translate_mobile_base": 0.1})
-            elif action == ManipulationControlAction.RIGHT:
-                self.move_to_pose({"translate_mobile_base": -0.1})
+            if self.joint_positions is not None:
+                pose = self.joint_positions
+                if action == ManipulationControlAction.UP:
+                    pose["joint_lift"] += self.LIFT_INCREMENT
+                elif action == ManipulationControlAction.DOWN:
+                    pose["joint_lift"] -= self.LIFT_INCREMENT
+                elif action == ManipulationControlAction.FORWARD:
+                    pose["wrist_extension"] += self.EXTENSION_INCREMENT
+                elif action == ManipulationControlAction.BACKWARD:
+                    pose["wrist_extension"] -= self.EXTENSION_INCREMENT
+                elif action == ManipulationControlAction.LEFT:
+                    pose = {"translate_mobile_base": self.BASE_INCREMENT}  # TODO: wait for this to finish
+                elif action == ManipulationControlAction.RIGHT:
+                    pose = {"translate_mobile_base": -self.BASE_INCREMENT}  # TODO: wait for this to finish
+                
+                self.move(pose)
+                
             self.rate.sleep()
 
 if __name__ == '__main__':
