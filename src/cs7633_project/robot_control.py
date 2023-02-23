@@ -29,15 +29,23 @@ class ManipulationControlAction(Enum):
     GRASP = 7
     RELEASE = 8
 
+class ControllerState(Enum):
+    DRIVE = 0
+    MANIPULATION = 1
+
 ############################################################
 # Abstract Base Class
 class RobotControl(ABC):
     def __init__(self, debug) -> None:
         super().__init__()
         self.debug = debug
+        self.controller_state = ControllerState.MANIPULATION
 
-    def set_debug(self, bool_debug):
+    def set_debug(self, bool_debug: bool):
         self.debug = bool_debug
+
+    def set_controller_state(self, state: ControllerState):
+        self.controller_state = state
 
     def debug_print(self, msg):
         if self.debug:
@@ -105,7 +113,7 @@ class UIControl(RobotControl):
         return super().get_drive_action(user_input)
 
 class KeyboardControl(RobotControl):
-    def __init__(self, debug) -> None:
+    def __init__(self, debug=True) -> None:
         super().__init__(debug)
 
         self.manipulation_keyboard_mapping = {
@@ -135,11 +143,11 @@ class KeyboardControl(RobotControl):
         print(" (L) Turn Left    (R) Turn Right ")
         print(" (F) Forwards     (B) Backwards ")
 
-    def get_selection():
+    def get_selection(self):
         return input("Enter a selection: ").lower()
 
     def get_manipulation_action(self, user_input) -> ManipulationControlAction:
-        valid_entries, _ = self.manipulation_keyboard_mapping.items()
+        valid_entries = self.manipulation_keyboard_mapping.keys()
         if user_input in valid_entries:
             return self.manipulation_keyboard_mapping[user_input]
         else:
