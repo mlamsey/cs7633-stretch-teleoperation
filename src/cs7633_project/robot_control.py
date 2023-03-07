@@ -1,9 +1,13 @@
+from __future__ import annotations
+
 from enum import Enum
 from abc import ABC
+from typing import Optional
 
 import mediapipe as mp
 
 from cs7633_project.hand_tracker import HandAnalyzer
+from cs7633_project.srv import ControlAction, ControlActionRequest
 
 LANDMARK = mp.solutions.hands.HandLandmark
 
@@ -17,6 +21,12 @@ class DriveControlAction(Enum):
     TURN_CW = 3
     TURN_CCW = 4
 
+    def make(action_name: str) -> Optional[DriveControlAction]:
+        name = action_name.upper()
+        if not hasattr(DriveControlAction, name):
+            return None
+        return getattr(DriveControlAction, name)
+
 class ManipulationControlAction(Enum):
     # these states correspond to cartesian controls
     IDLE = 0
@@ -29,9 +39,11 @@ class ManipulationControlAction(Enum):
     GRASP = 7
     RELEASE = 8
 
-class ControllerState(Enum):
-    DRIVE = 0
-    MANIPULATION = 1
+    def make(action_name: str) -> Optional[ManipulationControlAction]:
+        name = action_name.upper()
+        if not hasattr(ManipulationControlAction, name):
+            return None
+        return getattr(ManipulationControlAction, name)
 
 ############################################################
 # Abstract Base Class
@@ -39,12 +51,12 @@ class RobotControl(ABC):
     def __init__(self, debug) -> None:
         super().__init__()
         self.debug = debug
-        self.controller_state = ControllerState.MANIPULATION
+        self.controller_state = ControlActionRequest.CONTROLLER_MANIPULATION
 
     def set_debug(self, bool_debug: bool):
         self.debug = bool_debug
 
-    def set_controller_state(self, state: ControllerState):
+    def set_controller_state(self, state: ControlAction):
         self.controller_state = state
 
     def debug_print(self, msg):

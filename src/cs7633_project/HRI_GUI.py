@@ -4,7 +4,6 @@
 #
 # Created by: Sophie Yang
 
-
 from PyQt5 import QtCore, QtGui, QtWidgets
 
 
@@ -300,7 +299,7 @@ class Ui_MainWindow(object):
         self.grasp.setText(_translate("MainWindow", "Grasp"))
         self.release.setText(_translate("MainWindow", "Release"))
         self.drive_label.setText(_translate("MainWindow", "Drive Robot"))
-        self.manipulate_label.setText(_translate("MainWindow", "Manipulat Robot"))
+        self.manipulate_label.setText(_translate("MainWindow", "Manipulate Robot"))
         self.backward_manipulate.setText(_translate("MainWindow", "Backward"))
         self.forward_manipulate.setText(_translate("MainWindow", "Forward"))
         self.idle_drive.setText(_translate("MainWindow", "Idle/Stop"))
