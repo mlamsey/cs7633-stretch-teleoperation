@@ -1,0 +1,6 @@
+uint8 control_action
+uint8 controller_state
+
+---
+
+bool result
