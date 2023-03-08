@@ -37,8 +37,11 @@ class KeyboardTeleoperationNode(KeyboardControl):
 
             # set up service call
             action = int(action.value)
-            state = int(self.controller_state.value)
-            self.change_robot_pose_proxy(action, state)
+            state = int(self.controller_state)
+            try:
+                self.change_robot_pose_proxy(action, state)
+            except rospy.ServiceException as e:
+                rospy.logerr(e)
 
             self.rate.sleep()
 
