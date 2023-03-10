@@ -51,7 +51,7 @@ class GUINode:
 
     def change_pose(self, action, state):
         try:
-            self.change_robot_pose_proxy(action, state)
+            self.change_robot_pose_proxy(action.value, state)
         except rospy.ServiceException as e:
             rospy.logerr(e)
             rospy.logerr("Dropping command: " + str(action))
