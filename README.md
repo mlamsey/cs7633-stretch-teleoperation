@@ -9,6 +9,14 @@ Matthew Lamsey, Houriyeh Majditehran, Chuxuan (Sophie) Yang
 
 We present a framework for controlling a Hello Robot Stretch using hand gestures as an input. We leverage [open-source hand pose estimation software](https://google.github.io/mediapipe/) to collect control input from a camera mounted on a desk near the robot. This allows users to control a robot for pick-and-place tasks in an intuitive manner, without the need for peripheral input hardware.
 
+# Launch
+
+Three terminals:
+
+1. `roslaunch cs7633_project stretch_core.launch`
+2. `rosrun cs7633_project robot_control.py`
+3. `rosrun cs7633_project xbox_teleop.py`
+
 # Installation
 
 The generic python framework for this project is (hopefully mostly) system agnostic. The ROS interface requires a ROS installation, and the Hello Robot Stretch controller requires the Stretch's dependencies.
