@@ -2,8 +2,7 @@
 import rospy
 
 from cs7633_project.xbox_control import XboxControl
-from cs7633_project.robot_control import ControllerState
-from cs7633_project.srv import ControlAction
+from cs7633_project.srv import ControlAction, ControlActionRequest
 
 class XboxTeleop:
     def __init__(self) -> None:
@@ -17,11 +16,11 @@ class XboxTeleop:
 
     def main(self):
         while not rospy.is_shutdown():
-            action = self.controller.get_action(ControllerState.MANIPULATION)
+            action = self.controller.get_action(ControlActionRequest.CONTROLLER_MANIPULATION)
             rospy.loginfo(action)
 
             action = int(action.value)
-            state = int(ControllerState.MANIPULATION.value)
+            state = int(ControlActionRequest.CONTROLLER_MANIPULATION)
             self.change_robot_pose_proxy(action, state)
 
             self.rate.sleep()

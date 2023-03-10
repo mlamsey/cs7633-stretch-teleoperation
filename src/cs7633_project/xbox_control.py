@@ -1,5 +1,6 @@
 from cs7633_project.xbox_controller import XboxController
-from cs7633_project.robot_control import ManipulationControlAction, DriveControlAction, ControllerState
+from cs7633_project.robot_control import ManipulationControlAction, DriveControlAction
+from cs7633_project.srv import ControlActionRequest
 
 ############################################################
 def _manipulation_action_left_stick(gamepad_state: dict) -> ManipulationControlAction:
@@ -59,9 +60,9 @@ class XboxControl:
     def get_state(self):
         return self.gamepad.get_state()
 
-    def get_action(self, mode: ControllerState=ControllerState.MANIPULATION):
+    def get_action(self, mode: ControlActionRequest=ControlActionRequest.CONTROLLER_MANIPULATION):
         gamepad_state = self.get_state()
-        if mode == ControllerState.MANIPULATION:
+        if mode == ControlActionRequest.CONTROLLER_MANIPULATION:
             # get state
             l_stick_action = _manipulation_action_left_stick(gamepad_state)
             r_stick_action = _manipulation_action_right_stick(gamepad_state)
@@ -79,7 +80,7 @@ class XboxControl:
 
             return ManipulationControlAction.IDLE
 
-        elif mode == ControllerState.DRIVE:
+        elif mode == ControlActionRequest.CONTROLLER_DRIVE:
             # get state
             l_stick_action = _drive_action_left_stick(gamepad_state)
             r_stick_action = _drive_action_right_stick(gamepad_state)
