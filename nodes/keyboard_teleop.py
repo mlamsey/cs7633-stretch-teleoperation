@@ -3,10 +3,10 @@ import rospy
 import numpy as np
 
 # src
-from cs7633_project.robot_control import KeyboardControl, ControllerState
+from cs7633_project.robot_control import KeyboardControl
 
 # more ros
-from cs7633_project.srv import ControlAction
+from cs7633_project.srv import ControlAction, ControlActionRequest
 
 class KeyboardTeleoperationNode(KeyboardControl):
     def __init__(self) -> None:
@@ -20,25 +20,28 @@ class KeyboardTeleoperationNode(KeyboardControl):
 
     def main(self):
         while not rospy.is_shutdown():
-            if self.controller_state == ControllerState.MANIPULATION:
+            if self.controller_state == ControlActionRequest.CONTROLLER_MANIPULATION:
                 self.print_manipulation_menu()
-            elif self.controller_state == ControllerState.DRIVE:
+            elif self.controller_state == ControlActionRequest.CONTROLLER_DRIVE:
                 self.print_drive_menu()
             else:
                 rospy.logwarn("KeyboardTeleoperationNode::main: invalid state, resetting to drive")
-                self.state = ControllerState.DRIVE
+                self.state = ControlActionRequest.CONTROLLER_DRIVE
 
             ui = self.get_selection()
 
-            if self.controller_state == ControllerState.MANIPULATION:
+            if self.controller_state == ControlActionRequest.CONTROLLER_MANIPULATION:
                 action = self.get_manipulation_action(ui)
-            elif self.controller_state == ControllerState.DRIVE:
+            elif self.controller_state == ControlActionRequest.CONTROLLER_DRIVE:
                 action = self.get_drive_action(ui)
 
             # set up service call
             action = int(action.value)
-            state = int(self.controller_state.value)
-            self.change_robot_pose_proxy(action, state)
+            state = int(self.controller_state)
+            try:
+                self.change_robot_pose_proxy(action, state)
+            except rospy.ServiceException as e:
+                rospy.logerr(e)
 
             self.rate.sleep()
 
