@@ -87,7 +87,6 @@ class StretchControlNode(hm.HelloNode):
         pose = self.joint_positions
         if pose is not None:
             if action == ManipulationControlAction.UP.value:
-                print('e')
                 pose["joint_lift"] += self.LIFT_INCREMENT
             elif action == ManipulationControlAction.DOWN.value:
                 pose["joint_lift"] -= self.LIFT_INCREMENT
@@ -99,7 +98,12 @@ class StretchControlNode(hm.HelloNode):
                 pose = {"translate_mobile_base": self.BASE_INCREMENT}  # TODO: wait for this to finish
             elif action == ManipulationControlAction.RIGHT.value:
                 pose = {"translate_mobile_base": -self.BASE_INCREMENT}  # TODO: wait for this to finish
-            
+            elif action == ManipulationControlAction.GRASP.value:
+                pose['joint_gripper_finger_left'] = -0.05
+            elif action == ManipulationControlAction.RELEASE.value:
+                pose['joint_gripper_finger_left'] = 2.
+
+            # print(pose)
             self.move(pose)
             return ControlActionResponse(result=True)
         else:
@@ -112,10 +116,10 @@ class StretchControlNode(hm.HelloNode):
         LIFT_LIMITS = [0.05, 1.05]
         EXTENSION_LIMITS = [0.025, 0.45]
         YAW_LIMITS = 0.75 * np.array([-np.pi, np.pi])
-        GRASP_LIMITS = [-0.4, 1.0]  # TODO: check these
+        GRASP_LIMITS = [-0.1, 2.0]  # TODO: check these
 
-        print(self.joint_positions)
-        print(pose)
+        # print(self.joint_positions)
+        # print(pose)
         # truncate
         for key in pose.keys():
             if key == "joint_lift":
@@ -126,13 +130,16 @@ class StretchControlNode(hm.HelloNode):
                 pose[key] = truncate(pose[key], YAW_LIMITS)
             elif key == "joint_gripper_finger_left":
                 pose[key] = truncate(pose[key], GRASP_LIMITS)
+                print(pose)
         
         # go
+        # print(pose)
         self.move_to_pose(pose, return_before_done=return_before_done)
 
     # main
     def main(self):
         hm.HelloNode.main(self, 'stretch_controller', 'stretch_namespace', wait_for_first_pointcloud=False)
+        rospy.loginfo("Stretch Control Node launched!")
         rospy.spin()
 
 if __name__ == '__main__':
