@@ -2,6 +2,8 @@ import cv2
 import mediapipe as mp
 import numpy as np
 from typing import List
+from cs7633_project.robot_control import ManipulationControlAction, DriveControlAction
+from cs7633_project.srv import ControlActionRequest
 
 mp_drawing = mp.solutions.drawing_utils
 mp_drawing_styles = mp.solutions.drawing_styles
@@ -100,6 +102,40 @@ class HandTracker(HandAnalyzer):
         hand_prediction_results = self.hands_model.process(image)
         image = self.annotate_hands(image, hand_prediction_results)
         return image, hand_prediction_results
+    
+    def get_manipulation_action(self, hand_prediction_results):
+        # get extended fingers
+        extended_fingers = _get_extended_fingers(hand_prediction_results)
+
+        # determine action
+        # TODO: Houriyeh - you can add more logic here to determine the action
+        if LANDMARK.INDEX_FINGER_TIP in extended_fingers:
+            return ManipulationControlAction.OPEN_GRIPPER
+        elif LANDMARK.THUMB_TIP in extended_fingers:
+            return ManipulationControlAction.CLOSE_GRIPPER
+        else:
+            return ManipulationControlAction.IDLE
+        
+    def get_drive_action(self, hand_prediction_results):
+        # get extended fingers
+        extended_fingers = _get_extended_fingers(hand_prediction_results)
+
+        # determine action
+        # TODO: Houriyeh - you can add more logic here to determine the action
+        if LANDMARK.INDEX_FINGER_TIP in extended_fingers:
+            return DriveControlAction.FORWARD
+        elif LANDMARK.THUMB_TIP in extended_fingers:
+            return DriveControlAction.BACKWARD
+        else:
+            return DriveControlAction.IDLE
+
+    def get_action(self, hand_prediction_results, mode):
+        if mode == ControlActionRequest.CONTROLLER_MANIPULATION:
+            return self.get_manipulation_action(hand_prediction_results)
+        elif mode == ControlActionRequest.CONTROLLER_DRIVE:
+            return self.get_drive_action(hand_prediction_results)
+
+        return None
 
     def run(self):
         while self.capture_device.isOpened():
