@@ -44,6 +44,7 @@ class StretchControlNode(hm.HelloNode):
         self.EXTENSION_INCREMENT = 0.025  # m
         self.YAW_INCREMENT = 0.025  # rad
         self.BASE_INCREMENT = 0.025  # m
+        self.BASE_ROTATION_INCREMENT = 0.025  # rad
 
         # state
         self.joint_positions = None
@@ -86,6 +87,7 @@ class StretchControlNode(hm.HelloNode):
         action = data.control_action
         pose = self.joint_positions
         if pose is not None:
+            # Manipulation actions
             if action == ManipulationControlAction.UP.value:
                 pose["joint_lift"] += self.LIFT_INCREMENT
             elif action == ManipulationControlAction.DOWN.value:
@@ -102,6 +104,16 @@ class StretchControlNode(hm.HelloNode):
                 pose['joint_gripper_finger_left'] = -0.05
             elif action == ManipulationControlAction.RELEASE.value:
                 pose['joint_gripper_finger_left'] = 2.
+
+            # Drive actions
+            if action == DriveControlAction.FORWARD.value:
+                pose = {"translate_mobile_base": self.BASE_INCREMENT}
+            elif action == DriveControlAction.BASCKWARD.value:
+                pose = {"translate_mobile_base": -self.BASE_INCREMENT}
+            elif action == DriveControlAction.LEFT.value:
+                pose = {"rotate_mobile_base": self.BASE_ROTATION_INCREMENT}
+            elif action == DriveControlAction.RIGHT.value:
+                pose = {"rotate_mobile_base": -self.BASE_ROTATION_INCREMENT}
 
             # print(pose)
             self.move(pose)

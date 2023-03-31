@@ -45,6 +45,13 @@ class ManipulationControlAction(Enum):
             return None
         return getattr(ManipulationControlAction, name)
 
+class ControllerAction(Enum):
+    # these states correspond to actions affecting the controller state
+    IDLE = 0
+    CHANGE_MODE = 1
+    SET_MODE_MANIPULATION = 2
+    SET_MODE_DRIVE = 3
+
 ############################################################
 # Abstract Base Class
 class RobotControl(ABC):
