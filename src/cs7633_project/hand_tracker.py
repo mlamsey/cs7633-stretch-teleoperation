@@ -2,6 +2,8 @@ import cv2
 import mediapipe as mp
 import numpy as np
 from typing import List
+from enum import Enum
+
 from cs7633_project.robot_control import ManipulationControlAction, DriveControlAction
 from cs7633_project.srv import ControlActionRequest
 
@@ -11,9 +13,16 @@ mp_hands = mp.solutions.hands
 
 LANDMARK = mp.solutions.hands.HandLandmark
 
+class Direction(Enum):
+    NONE = 0
+    UP = 1
+    RIGHT = 2
+    DOWN = 3
+    LEFT = 4
+
 ############################################################
 # helper functions
-def _tip2wrist_dist(tip: LANDMARK, estimate):
+def _tip2wrist_dist(tip: LANDMARK, estimate) -> float:
     tip_landmark = estimate[0].landmark[tip.value]
     wrist_landmark = estimate[0].landmark[LANDMARK.WRIST.value]
 
@@ -22,6 +31,17 @@ def _tip2wrist_dist(tip: LANDMARK, estimate):
     
     dist = np.linalg.norm(t - w)
     return dist
+
+def _tip2wrist_direction(tip: LANDMARK, estimate):
+    tip_landmark = estimate[0].landmark[tip.value]
+    wrist_landmark = estimate[0].landmark[LANDMARK.WRIST.value]
+
+    t = np.array([tip_landmark.x, tip_landmark.y, tip_landmark.z])
+    w = np.array([wrist_landmark.x, wrist_landmark.y, wrist_landmark.z])
+    v = t - w
+
+    angle = np.arctan2(v[0], v[1])
+    return angle
 
 def _get_extended_fingers(estimate, threshold=0.25):
     tips = [LANDMARK.THUMB_TIP,
@@ -49,7 +69,14 @@ class HandAnalyzer:
         landmarks = hand_prediction_results.multi_hand_landmarks
         if landmarks is not None:
             return _get_extended_fingers(landmarks)
-        return None
+        return []
+
+    def get_finger_direction(self, hand_prediction_results, finger: LANDMARK) -> float:
+        landmarks = hand_prediction_results.multi_hand_landmarks
+        if landmarks is not None:
+            return _tip2wrist_direction(finger, landmarks)
+        
+        return 0.
 
 class HandTracker(HandAnalyzer):
     # contains interface with a webcam and visualization methods
@@ -105,27 +132,40 @@ class HandTracker(HandAnalyzer):
     
     def get_manipulation_action(self, hand_prediction_results):
         # get extended fingers
-        extended_fingers = _get_extended_fingers(hand_prediction_results)
+        extended_fingers = self.get_extended_fingers(hand_prediction_results)
+        print(extended_fingers)
 
         # determine action
-        # TODO: Houriyeh - you can add more logic here to determine the action
-        if LANDMARK.INDEX_FINGER_TIP in extended_fingers:
-            return ManipulationControlAction.OPEN_GRIPPER
-        elif LANDMARK.THUMB_TIP in extended_fingers:
-            return ManipulationControlAction.CLOSE_GRIPPER
+        one_finger_extended = True if len(extended_fingers) == 1 else False
+        if one_finger_extended:
+            if LANDMARK.INDEX_FINGER_TIP in extended_fingers:
+                return ManipulationControlAction.RELEASE
+            elif LANDMARK.THUMB_TIP in extended_fingers:
+                return ManipulationControlAction.GRASP
+            else:
+                return ManipulationControlAction.IDLE
         else:
             return ManipulationControlAction.IDLE
         
     def get_drive_action(self, hand_prediction_results):
         # get extended fingers
-        extended_fingers = _get_extended_fingers(hand_prediction_results)
+        extended_fingers = self.get_extended_fingers(hand_prediction_results)
 
         # determine action
-        # TODO: Houriyeh - you can add more logic here to determine the action
-        if LANDMARK.INDEX_FINGER_TIP in extended_fingers:
-            return DriveControlAction.FORWARD
-        elif LANDMARK.THUMB_TIP in extended_fingers:
-            return DriveControlAction.BACKWARD
+        one_finger_extended = True if len(extended_fingers) == 1 else False
+        if one_finger_extended:
+            if LANDMARK.INDEX_FINGER_TIP in extended_fingers:
+                index_finger_angle = self.get_finger_direction(hand_prediction_results, LANDMARK.INDEX_FINGER_TIP)
+                if index_finger_angle < -0.5:
+                    return DriveControlAction.TURN_CCW
+                elif index_finger_angle > 0.5:
+                    return DriveControlAction.TURN_CW
+                else:
+                    return DriveControlAction.FORWARD
+            elif LANDMARK.THUMB_TIP in extended_fingers:
+                return DriveControlAction.BACKWARD
+            else:
+                return DriveControlAction.IDLE
         else:
             return DriveControlAction.IDLE
 

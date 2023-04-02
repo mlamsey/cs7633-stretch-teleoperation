@@ -11,7 +11,7 @@ if STRETCH:
 
 # src
 from cs7633_project.robot_control import RobotControl, ManipulationControlAction, DriveControlAction
-from cs7633_project.hand_tracker import HandTracker
+# from cs7633_project.hand_tracker import HandTracker
 
 # more ros
 from cs7633_project.srv import ControlAction, ControlActionRequest, ControlActionResponse
@@ -21,18 +21,18 @@ def truncate(value, joint_range):
     return np.min([np.max([value, joint_range[0]]), joint_range[1]])
 
 # objects
-class RobotControlNode:
-    def __init__(self) -> None:
-        rospy.init_node("robot_control", anonymous=True)
-        self.controller = RobotControl()
+# class RobotControlNode:
+#     def __init__(self) -> None:
+#         rospy.init_node("robot_control", anonymous=True)
+#         self.controller = RobotControl()
 
-        # for testing
-        self.hand_tracker = HandTracker()
+#         # for testing
+#         self.hand_tracker = HandTracker()
     
-    def main(self):
-        while not rospy.is_shutdown():
-            _, result = self.hand_tracker.get_frame()
-            self.controller.get_action(result)
+#     def main(self):
+#         while not rospy.is_shutdown():
+#             _, result = self.hand_tracker.get_frame()
+#             self.controller.get_action(result)
 
 class StretchControlNode(hm.HelloNode):
     def __init__(self):
@@ -49,6 +49,7 @@ class StretchControlNode(hm.HelloNode):
 
         # state
         self.joint_positions = None
+        self.last_base_drive_time = None
 
         # objects
         # self.controller = RobotControl()
@@ -137,6 +138,7 @@ class StretchControlNode(hm.HelloNode):
         # print(self.joint_positions)
         # print(pose)
         # truncate
+        bool_drive = False
         for key in pose.keys():
             if key == "joint_lift":
                 pose[key] = truncate(pose[key], LIFT_LIMITS)
@@ -147,14 +149,22 @@ class StretchControlNode(hm.HelloNode):
             elif key == "joint_gripper_finger_left":
                 pose[key] = truncate(pose[key], GRASP_LIMITS)
                 print(pose)
+            elif "base" in key:
+                bool_drive = True
         
         # go
         # print(pose)
-        self.move_to_pose(pose, return_before_done=return_before_done)
+        if not bool_drive:
+            self.move_to_pose(pose, return_before_done=return_before_done)
+        else:
+            if rospy.Time.now().secs - self.last_base_drive_time.secs > 1.:
+                self.move_to_pose(pose, return_before_done=return_before_done)
+                self.last_base_drive_time = rospy.Time.now()
 
     # main
     def main(self):
         hm.HelloNode.main(self, 'stretch_controller', 'stretch_namespace', wait_for_first_pointcloud=False)
+        self.last_base_drive_time = rospy.Time.now()
         rospy.loginfo("Stretch Control Node launched!")
         rospy.spin()
 
