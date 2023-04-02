@@ -17,25 +17,29 @@ class XboxTeleop:
             "/hri/control_action", ControlAction)
 
     def swap_control_mode(self):
+        rospy.loginfo("Changing Control Mode!")
         if self.control_mode == ControlActionRequest.CONTROLLER_MANIPULATION:
             self.control_mode = ControlActionRequest.CONTROLLER_DRIVE
+            rospy.loginfo("Mode: DRIVE")
         elif self.control_mode == ControlActionRequest.CONTROLLER_DRIVE:
             self.control_mode = ControlActionRequest.CONTROLLER_MANIPULATION
+            rospy.loginfo("Mode: MANIPULATION")
 
     def main(self):
         while not rospy.is_shutdown():
-            action = self.controller.get_action(ControlActionRequest.CONTROLLER_MANIPULATION)
+            action = self.controller.get_action(self.control_mode)
             if action == ControllerAction.CHANGE_MODE:
                 self.swap_control_mode()
                 rospy.loginfo("Changing Control Mode!")
                 self.rate.sleep()
                 continue
 
-            rospy.loginfo(action)
+            if action is not None:
+                # rospy.loginfo(action)
 
-            action = int(action.value)
-            state = int(ControlActionRequest.CONTROLLER_MANIPULATION)
-            self.change_robot_pose_proxy(action, state)
+                action = int(action.value)
+                state = int(self.control_mode)
+                self.change_robot_pose_proxy(action, state)
 
             self.rate.sleep()
 

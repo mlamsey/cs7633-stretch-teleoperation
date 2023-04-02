@@ -48,14 +48,16 @@ def _drive_action_left_stick(gamepad_state: dict):
     x = gamepad_state["left_stick_x"]
     y = gamepad_state["left_stick_y"]
     if x > 0.5:
-        return DriveControlAction.TURN_CCW
-    elif x < -0.5:
         return DriveControlAction.TURN_CW
+    elif x < -0.5:
+        return DriveControlAction.TURN_CCW
     
     if y > 0.5:
         return DriveControlAction.FORWARD
     elif y < -0.5:
         return DriveControlAction.BACKWARD
+    
+    return DriveControlAction.IDLE
 
 def _drive_action_right_stick(gamepad_state: dict):
     return DriveControlAction.IDLE
