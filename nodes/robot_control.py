@@ -10,11 +10,11 @@ if STRETCH:
     from sensor_msgs.msg import JointState
 
 # src
-from cs7633_project.robot_control import RobotControl, ManipulationControlAction
+from cs7633_project.robot_control import RobotControl, ManipulationControlAction, DriveControlAction
 from cs7633_project.hand_tracker import HandTracker
 
 # more ros
-from cs7633_project.srv import ControlAction, ControlActionResponse
+from cs7633_project.srv import ControlAction, ControlActionRequest, ControlActionResponse
 
 # helpers
 def truncate(value, joint_range):
@@ -44,6 +44,8 @@ class StretchControlNode(hm.HelloNode):
         self.EXTENSION_INCREMENT = 0.025  # m
         self.YAW_INCREMENT = 0.025  # rad
         self.BASE_INCREMENT = 0.025  # m
+        self.DRIVE_INCREMENT = 0.05  # m
+        self.BASE_ROTATION_INCREMENT = 0.05  # rad
 
         # state
         self.joint_positions = None
@@ -84,24 +86,38 @@ class StretchControlNode(hm.HelloNode):
     # services
     def move_service(self, data):
         action = data.control_action
+        state = data.controller_state
         pose = self.joint_positions
         if pose is not None:
-            if action == ManipulationControlAction.UP.value:
-                pose["joint_lift"] += self.LIFT_INCREMENT
-            elif action == ManipulationControlAction.DOWN.value:
-                pose["joint_lift"] -= self.LIFT_INCREMENT
-            elif action == ManipulationControlAction.FORWARD.value:
-                pose["wrist_extension"] += self.EXTENSION_INCREMENT
-            elif action == ManipulationControlAction.BACKWARD.value:
-                pose["wrist_extension"] -= self.EXTENSION_INCREMENT
-            elif action == ManipulationControlAction.LEFT.value:
-                pose = {"translate_mobile_base": self.BASE_INCREMENT}  # TODO: wait for this to finish
-            elif action == ManipulationControlAction.RIGHT.value:
-                pose = {"translate_mobile_base": -self.BASE_INCREMENT}  # TODO: wait for this to finish
-            elif action == ManipulationControlAction.GRASP.value:
-                pose['joint_gripper_finger_left'] = -0.05
-            elif action == ManipulationControlAction.RELEASE.value:
-                pose['joint_gripper_finger_left'] = 2.
+            # Manipulation actions
+            if state == ControlActionRequest.CONTROLLER_MANIPULATION:
+                if action == ManipulationControlAction.UP.value:
+                    pose["joint_lift"] += self.LIFT_INCREMENT
+                elif action == ManipulationControlAction.DOWN.value:
+                    pose["joint_lift"] -= self.LIFT_INCREMENT
+                elif action == ManipulationControlAction.FORWARD.value:
+                    pose["wrist_extension"] += self.EXTENSION_INCREMENT
+                elif action == ManipulationControlAction.BACKWARD.value:
+                    pose["wrist_extension"] -= self.EXTENSION_INCREMENT
+                elif action == ManipulationControlAction.LEFT.value:
+                    pose = {"translate_mobile_base": self.BASE_INCREMENT}  # TODO: wait for this to finish
+                elif action == ManipulationControlAction.RIGHT.value:
+                    pose = {"translate_mobile_base": -self.BASE_INCREMENT}  # TODO: wait for this to finish
+                elif action == ManipulationControlAction.GRASP.value:
+                    pose['joint_gripper_finger_left'] = -0.05
+                elif action == ManipulationControlAction.RELEASE.value:
+                    pose['joint_gripper_finger_left'] = 2.
+
+            # Drive actions
+            elif state == ControlActionRequest.CONTROLLER_DRIVE:
+                if action == DriveControlAction.FORWARD.value:
+                    pose = {"translate_mobile_base": self.DRIVE_INCREMENT}
+                elif action == DriveControlAction.BACKWARD.value:
+                    pose = {"translate_mobile_base": -self.DRIVE_INCREMENT}
+                elif action == DriveControlAction.TURN_CCW.value:
+                    pose = {"rotate_mobile_base": self.BASE_ROTATION_INCREMENT}
+                elif action == DriveControlAction.TURN_CW.value:
+                    pose = {"rotate_mobile_base": -self.BASE_ROTATION_INCREMENT}
 
             # print(pose)
             self.move(pose)
