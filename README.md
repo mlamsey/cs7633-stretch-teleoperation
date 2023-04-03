@@ -11,11 +11,30 @@ We present a framework for controlling a Hello Robot Stretch using hand gestures
 
 # Launch
 
-Three terminals:
+## Booting up a Stretch
+
+1. Plug everything in
+1. Turn on the power switch
+2. Log out of RAIL
+3. Log into the hello robot account using credentials on the base
+4. Run `stretch_robot_home.py` in a terminal (make sure nothing is in Stretch's way)
+5. Take the clamp off of Stretch's mast when the motors activate
+
+## Launching the Project 
+
+Open five terminals, and run:
 
 1. `roslaunch cs7633_project stretch_core.launch`
 2. `rosrun cs7633_project robot_control.py`
 3. `rosrun cs7633_project xbox_teleop.py`
+4. `rosrun cs7633_project gui_teleop.py`
+5. `rosrun cs7633_project hand_teleop.py`
+
+## Shutdown
+
+1. Put the clamp on the robot's mast below its arm
+2. Run `sudo shutdown now` in the terminal
+3. Turn off the robot's power switch
 
 # Installation
 
