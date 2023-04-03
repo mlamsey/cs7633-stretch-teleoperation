@@ -38,14 +38,14 @@ class GUINode:
         ui.right_drive.clicked.connect(lambda: self.gui_callback_drive_action(DriveControlAction.TURN_CW))
 
         # Setup Callbacks: Manipulation
-        ui.backward_manipulate.clicked.connect(lambda: self.gui_callback_drive_action(ManipulationControlAction.BACKWARD))
-        ui.forward_manipulate.clicked.connect(lambda: self.gui_callback_drive_action(ManipulationControlAction.FORWARD))
-        ui.left_manipulate.clicked.connect(lambda: self.gui_callback_drive_action(ManipulationControlAction.LEFT))
-        ui.right_manipulate.clicked.connect(lambda: self.gui_callback_drive_action(ManipulationControlAction.RIGHT))
-        ui.up_manipulate.clicked.connect(lambda: self.gui_callback_drive_action(ManipulationControlAction.UP))
-        ui.down_manipulate.clicked.connect(lambda: self.gui_callback_drive_action(ManipulationControlAction.DOWN))
-        ui.grasp.clicked.connect(lambda: self.gui_callback_drive_action(ManipulationControlAction.GRASP))
-        ui.release.clicked.connect(lambda: self.gui_callback_drive_action(ManipulationControlAction.RELEASE))
+        ui.backward_manipulate.clicked.connect(lambda: self.gui_callback_manipulation_action(ManipulationControlAction.BACKWARD))
+        ui.forward_manipulate.clicked.connect(lambda: self.gui_callback_manipulation_action(ManipulationControlAction.FORWARD))
+        ui.left_manipulate.clicked.connect(lambda: self.gui_callback_manipulation_action(ManipulationControlAction.LEFT))
+        ui.right_manipulate.clicked.connect(lambda: self.gui_callback_manipulation_action(ManipulationControlAction.RIGHT))
+        ui.up_manipulate.clicked.connect(lambda: self.gui_callback_manipulation_action(ManipulationControlAction.UP))
+        ui.down_manipulate.clicked.connect(lambda: self.gui_callback_manipulation_action(ManipulationControlAction.DOWN))
+        ui.grasp.clicked.connect(lambda: self.gui_callback_manipulation_action(ManipulationControlAction.GRASP))
+        ui.release.clicked.connect(lambda: self.gui_callback_manipulation_action(ManipulationControlAction.RELEASE))
         
         return MainWindow
 
