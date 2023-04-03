@@ -69,7 +69,7 @@ class HandTrackerNode:
 
                 action = int(action.value)
                 state = int(self.control_mode)
-                # self.change_robot_pose_proxy(action, state)
+                self.change_robot_pose_proxy(action, state)
 
             self.rate.sleep()
 

@@ -157,7 +157,7 @@ class StretchControlNode(hm.HelloNode):
         if not bool_drive:
             self.move_to_pose(pose, return_before_done=return_before_done)
         else:
-            if rospy.Time.now().secs - self.last_base_drive_time.secs > 1.:
+            if rospy.Time.now().secs - self.last_base_drive_time.secs > 0.25:
                 self.move_to_pose(pose, return_before_done=return_before_done)
                 self.last_base_drive_time = rospy.Time.now()
 
