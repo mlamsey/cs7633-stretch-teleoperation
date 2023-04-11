@@ -1,9 +1,13 @@
 #!/usr/bin/env python3
+import json
 import rospy
 from cs7633_project.srv import ControlAction, ControlActionRequest
 from cs7633_project.robot_control import ControllerAction
 
 from cs7633_project.hand_tracker import HandTracker, LANDMARK
+from cs7633_project.logger import build_action_log_msg
+
+from std_msgs.msg import String
 
 class HandTrackerNode:
     def __init__(self) -> None:
@@ -60,6 +64,10 @@ class HandTrackerNode:
                 if action == ControllerAction.CHANGE_MODE:
                     self.swap_control_mode()
                     rospy.loginfo("Changing Control Mode!")
+                    now = rospy.Time.now()
+                    log_dict = build_action_log_msg("hand", now.secs, now.nsecs)
+                    log_dict["msg"] = "changing mode"
+                    self.log_dict_publisher.publish(json.dumps(log_dict))
                     # self.rate.sleep()
                     rospy.sleep(2.)
                     continue

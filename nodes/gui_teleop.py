@@ -1,5 +1,6 @@
 #!/usr/bin/env python3
 import rospy
+import json
 
 # system
 from PyQt5 import QtWidgets
@@ -8,9 +9,11 @@ import sys
 # src
 from cs7633_project import HRI_GUI
 from cs7633_project.robot_control import ManipulationControlAction, DriveControlAction
+from cs7633_project.logger import build_action_log_msg
 
 # ros
 from cs7633_project.srv import ControlAction, ControlActionRequest
+from std_msgs.msg import String
 
 ############################################################
 class GUINode:
@@ -19,6 +22,13 @@ class GUINode:
 
         self.app = QtWidgets.QApplication([])
         self.ui_mainwindow = self.setup_gui()
+
+        # publishers
+        self.log_dict_publisher = rospy.Publisher(
+            "/hri/log/dict",
+            String,
+            queue_size=10
+        )
 
         # srv
         self.change_robot_pose_proxy = rospy.ServiceProxy(
@@ -53,6 +63,9 @@ class GUINode:
 
     def change_pose(self, action, state):
         try:
+            now = rospy.Time.now()
+            log_dict = build_action_log_msg("gui", now.secs, now.nsecs, action.value, state)
+            self.log_dict_publisher.publish(json.dumps(log_dict))
             self.change_robot_pose_proxy(action.value, state)
         except rospy.ServiceException as e:
             rospy.logerr(e)

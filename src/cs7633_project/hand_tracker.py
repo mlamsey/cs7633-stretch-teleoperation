@@ -196,7 +196,7 @@ class HandTracker(HandAnalyzer):
         
         # five finger actions
         elif n_fingers == 5:
-            if self.check_fingers_in_contact(hand_prediction_results, LANDMARK.THUMB_TIP, LANDMARK.INDEX_FINGER_TIP, threshold=0.10):
+            if self.check_fingers_in_contact(hand_prediction_results, LANDMARK.THUMB_TIP, LANDMARK.INDEX_FINGER_TIP, threshold=0.12):
                 return ManipulationControlAction.GRASP
             return ManipulationControlAction.RELEASE
         
