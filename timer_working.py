@@ -20,6 +20,8 @@ class TimeRecorderGUI:
         self.master = master
         self.master.title("Time Recorder")
         self.master.geometry("400x300")
+        self.timer_label = Label(master, text="Press s to start timer; Press e to end timer")
+        self.timer_label.place(x=100, y=20)
         
         # Initialize variables
         self.participant_code = ''
