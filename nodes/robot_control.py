@@ -3,6 +3,8 @@ import rospy
 import numpy as np
 import threading
 
+from cs7633project import Logger
+
 # Stretch Imports
 STRETCH = True
 if STRETCH:

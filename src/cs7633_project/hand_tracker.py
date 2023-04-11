@@ -122,6 +122,10 @@ class HandTracker(HandAnalyzer):
         return image
 
     def show(self, image, static=False):
+        # flip image vertically
+        image = cv2.flip(image, 1)
+
+        # show image
         cv2.imshow('MediaPipe Hands', image)
         if static:
             cv2.waitKey(5 * 1000) # wait 5 seconds (5000 ms)
