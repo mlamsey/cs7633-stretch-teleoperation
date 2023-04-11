@@ -2,6 +2,7 @@
 import rospy
 import numpy as np
 import threading
+import json
 
 # Stretch Imports
 STRETCH = True
@@ -15,6 +16,7 @@ from cs7633_project.robot_control import RobotControl, ManipulationControlAction
 
 # more ros
 from cs7633_project.srv import ControlAction, ControlActionRequest, ControlActionResponse
+from std_msgs.msg import String
 
 # helpers
 def truncate(value, joint_range):
@@ -55,6 +57,13 @@ class StretchControlNode(hm.HelloNode):
         # self.controller = RobotControl()
         # self.hand_tracker = HandTracker()
 
+        # publishers
+        self.log_dict_publisher = rospy.Publisher(
+            "/hri/log/dict",
+            String,
+            queue_size=10
+        )
+
         # subscribers
         self.joint_states_subscriber = rospy.Subscriber(
             "/stretch/joint_states", JointState, self.callback_joint_state
@@ -84,10 +93,22 @@ class StretchControlNode(hm.HelloNode):
         # self.joint_states_raw = joint_states
         self.joint_positions = joint_positions
 
+    def log_action(self, action, controller_state):
+        now = rospy.Time.now()
+        log_dict = {
+            "source": "robot_control",
+            "time_s": now.secs,
+            "time_ns": now.nsecs,
+            "action": action,
+            "controller_state": controller_state
+        }
+        # self.log_dict_publisher.publish(json.dumps(log_dict))
+
     # services
     def move_service(self, data):
         action = data.control_action
         state = data.controller_state
+        self.log_action(action, state)
         pose = self.joint_positions
         if pose is not None:
             # Manipulation actions

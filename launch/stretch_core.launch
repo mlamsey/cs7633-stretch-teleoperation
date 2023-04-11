@@ -15,6 +15,10 @@
   <include file="$(find stretch_core)/launch/stretch_driver.launch" pass_all_args="true"/>
   <!-- -->
 
+  <!-- LOGGER -->
+  <node name="logger_node" pkg="cs7633_project" type="logger_node.py" output="screen" />
+  <!-- -->
+
   <!-- MAPPING --> <!-- This makes the "map" frame available in tf_listener.lookupTransform() -->
   <!-- <node name="funmap" pkg="stretch_funmap" type="funmap" output="screen" >
   <param name="debug_directory" type="string" value="$(arg debug_directory)"/>
