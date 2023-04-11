@@ -8,10 +8,11 @@ from tkinter.ttk import *
 import tkinter as tk
 from tkinter import scrolledtext
 from tkinter import ttk
-from tkmacosx import Button #to be commented out for PC users
+# from tkmacosx import Button #to be commented out for PC users
 from tkinter import font as tkFont
 from tkinter.messagebox import showinfo
 from tkinter.simpledialog import askstring
+import os
 
 class TimeRecorderGUI:
 
@@ -86,7 +87,7 @@ class TimeRecorderGUI:
                     'Task Name': [self.task_name],
                     'Duration': [self.duration]
                 })
-                data.to_csv('recorded_times'+self.participant_code+'.csv', mode='a', index=False, header=not os.path.exists('recorded_times.csv'))
+                data.to_csv('logs/recorded_times'+self.participant_code+'.csv', mode='a', index=False, header=not os.path.exists('recorded_times.csv'))
                 print("Data added to DataFrame.")
 
         self.popup = tk.Toplevel(self.master)
@@ -101,6 +102,7 @@ class TimeRecorderGUI:
         self.popup.focus_set()
         self.popup.grab_set()
         self.popup.wait_window()
+        return self.participant_code, self.task_name
 
     def save_task(self):
         if self.start_time is not None:
