@@ -24,6 +24,8 @@ class GUINode:
         self.change_robot_pose_proxy = rospy.ServiceProxy(
             "/hri/control_action", ControlAction)
 
+        self.done_moving = True
+
     # Helpers
     def setup_gui(self):
         # Build Qt Window
