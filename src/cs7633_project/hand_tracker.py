@@ -123,7 +123,7 @@ class HandTracker(HandAnalyzer):
 
     def show(self, image, static=False):
         # flip image vertically
-        image = cv2.flip(image, 1)
+        image = cv2.flip(image, 0)
 
         # show image
         cv2.imshow('MediaPipe Hands', image)
