@@ -57,6 +57,11 @@ hand_times = unlist(hand_times)
 xbox_times = unlist(xbox_times)
 gui_times = unlist(gui_times)
 
+# summary stats
+hand_task_summary = summary(hand_times)
+xbox_task_summary = summary(xbox_times)
+gui_task_summary = summary(gui_times)
+
 # print(hand_times)
 # hist(hand_times[[1]], main = "Hand Times", xlab = "Time (s)", ylab = "Frequency", col = "blue")
 
@@ -66,8 +71,7 @@ max_t_bin = ceiling(max_t / 100) * 100
 bins <- seq(0, max_t_bin, by = 50)
 par(mfrow=c(3, 1))
 
-hist(hand_times, col="blue", breaks=bins, ylim=c(0, 7))
-hist(xbox_times, col="red", breaks=bins)
-hist(gui_times, col="green", breaks=bins)
+hist(hand_times, col="#00008B", breaks=bins, ylim=c(0, 7), main="Hand Task Completion Time", xlab="Time (s)", ylab="Frequency")
+hist(xbox_times, col="#B22222", breaks=bins, ylim=c(0, 7), main="Xbox Task Completion Time", xlab="Time (s)", ylab="Frequency")
+hist(gui_times, col="#9ACD32", breaks=bins, ylim=c(0, 7), main="GUI Task Completion Time", xlab="Time (s)", ylab="Frequency")
 
-# legend("topright", c("Hand", "Xbox", "GUI"), fill=c("blue", "red", "green"))
