@@ -19,7 +19,7 @@ if (!file.exists(file_path)) {
 
     # split at row 7423
     log_data_1 = log_data[1:7423,]
-    log_data_2 = log_data[7424:length(log_data),]
+    log_data_2 = log_data[7424:nrow(log_data),]
 
     # write first half to folder hri002
     write.table(log_data_1, file = file_path, append = FALSE, row.names = FALSE, col.names = TRUE, sep = ",")
@@ -31,4 +31,6 @@ if (!file.exists(file_path)) {
     file_path <- paste(file_path, file_name, sep = "/")
 
     write.table(log_data_2, file = file_path, append = FALSE, row.names = FALSE, col.names = TRUE, sep = ",")
+} else {
+    print(paste("log_cleaned.csv already exists in", dir, sep = " "))
 }
