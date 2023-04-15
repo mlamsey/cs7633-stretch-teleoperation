@@ -21,6 +21,9 @@ if (!file.exists(file_path)) {
     log_data_1 = log_data[1:7423,]
     log_data_2 = log_data[7424:length(log_data),]
 
+    # write first half to folder hri002
+    write.table(log_data_1, file = file_path, append = FALSE, row.names = FALSE, col.names = TRUE, sep = ",")
+
     # write second half to folder hri003
     dir = "hri003"
     file_name = "log_cleaned.csv"
