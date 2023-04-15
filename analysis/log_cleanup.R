@@ -41,5 +41,5 @@ for (i in c(1, 2, 3, 4, 5, 6)){
     write(log_header, file = "log_cleaned.csv", append = FALSE)
 
     # write cleaned data to file
-    write.table(clean_rows(log_data), file = "log_cleaned.csv", append = TRUE, row.names = FALSE, col.names = FALSE)
+    write.table(clean_rows(log_data), file = "log_cleaned.csv", append = TRUE, row.names = FALSE, col.names = FALSE, sep = ",")
 }
