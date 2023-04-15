@@ -68,11 +68,11 @@ log_data_list <- lapply(directory_list, function(dir) {
 
 ############################################################
 # basic demographics
-participant_id <- qualtrics_data["Q1"]
-age <- qualtrics_data["Q2"]
-gender <- qualtrics_data["Q3"]
-education <- qualtrics_data["Q4"]
-learning_style <- qualtrics_data["Q5"]
+participant_id <- qualtrics_data$Q1[3:length(qualtrics_data$Q1)]
+age <- qualtrics_data$Q2[3:length(qualtrics_data$Q2)]
+gender <- qualtrics_data$Q3[3:length(qualtrics_data$Q3)]
+education <- qualtrics_data$Q4[3:length(qualtrics_data$Q4)]
+learning_style <- qualtrics_data$Q5[3:length(qualtrics_data$Q5)]
 
 # technology experience
 tech_Q = "Q12_"
@@ -108,13 +108,24 @@ hand_time_per_user = colMeans(do.call(cbind, hand_times))
 xbox_time_per_user = colMeans(do.call(cbind, xbox_times))
 gui_time_per_user = colMeans(do.call(cbind, gui_times))
 
-print(tech_comfort_per_user)
-print(hand_time_per_user)
+female_hand_times = hand_time_per_user[gender == "Female"]
+female_xbox_times = xbox_time_per_user[gender == "Female"]
+female_gui_times = gui_time_per_user[gender == "Female"]
+all_female_times = unlist(c(female_hand_times, female_xbox_times, female_gui_times))
 
-# plot
+male_hand_times = hand_time_per_user[gender == "Male"]
+male_xbox_times = xbox_time_per_user[gender == "Male"]
+male_gui_times = gui_time_per_user[gender == "Male"]
+all_male_times = unlist(c(male_hand_times, male_xbox_times, male_gui_times))
+
+# print(tech_comfort_per_user)
+# print(hand_time_per_user)
+
+############################################################
+# plots
 # tech_vs_time = data.frame(tech_comfort_per_user, hand_time_per_user, xbox_time_per_user, gui_time_per_user)
 # par(mfrow = c(3, 1))
-par(mfrow = c(1, 1))
+par(mfrow = c(3, 1))
 # plot(tech_vs_time$tech_comfort_per_user, tech_vs_time$hand_time_per_user, xlab = "Technology Comfort", ylab = "Task Time (s)", main = "Hand")
 # plot(tech_vs_time$tech_comfort_per_user, tech_vs_time$xbox_time_per_user, xlab = "Technology Comfort", ylab = "Task Time (s)", main = "Xbox")
 # plot(tech_vs_time$tech_comfort_per_user, tech_vs_time$gui_time_per_user, xlab = "Technology Comfort", ylab = "Task Time (s)", main = "GUI")
@@ -123,3 +134,8 @@ points(tech_comfort_per_user, xbox_time_per_user, col="blue", pch=19)
 points(tech_comfort_per_user, gui_time_per_user, col="green", pch=19)
 grid()
 legend("topright", legend=c("Hand", "Xbox", "GUI"), col=c("red", "blue", "green"), pch=19)
+
+# plot male and female times for each mode
+bins = 50 * (0:12)
+hist(all_female_times, breaks=bins, col="red", main="Female Task Completion Time")
+hist(all_male_times, breaks=bins, col="blue", main="Male Task Completion Time")
