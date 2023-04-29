@@ -82,18 +82,19 @@ def get_trust(ids, modality):
     trust_cols = [col for col in qualtrics_cols if trust_base in col]
 
 # hypotheses
-def hypothesis_1():
+def hypothesis_1(bool_save=False):
     """
     Hypothesis 1: Gender affects performance and perceived workload
     """
     
     pass
 
-def hypothesis_2():
+def hypothesis_2(bool_save=False):
     """
     Hypothesis 2: People who have played video games would find xbox
     most intuitive
     """
+
     qualitrics_df = pd.read_csv(data_directory + qualitrics_file)
     no_games_ratings = [1, 2, 3]
     playes_games_ratings = [4, 5]
@@ -104,7 +105,7 @@ def hypothesis_2():
     no_games_ids = np.where(np.isin(games_ratings, no_games_ratings))[0]
     playes_games_ids = np.where(np.isin(games_ratings, playes_games_ratings))[0]
     
-    data = []
+    data = {}
 
     print(" ")
     print("=" * 10 + " HYPOTHESIS 2 " + "=" * 10)
@@ -112,30 +113,59 @@ def hypothesis_2():
         no_game_eou = get_ease_of_use(no_games_ids, value)
         plays_game_eou = get_ease_of_use(playes_games_ids, value)
 
-        data.append(no_game_eou)
+        data[key] = plays_game_eou
 
         # Perform a t-test
-        t_statistic, p_value = ttest_ind(no_game_eou, plays_game_eou)
+        # t_statistic, p_value = ttest_ind(no_game_eou, plays_game_eou)
 
         # Print the results
-        print(key)
-        print("means: ", np.mean(no_game_eou), np.mean(plays_game_eou))
-        print("t-statistic:", t_statistic)
-        print("p-value:", p_value)
-        print(" ")
+        # print(key)
+        # print("means: ", np.mean(no_game_eou), np.mean(plays_game_eou))
+        # print("t-statistic:", t_statistic)
+        # print("p-value:", p_value)
+        # print(" ")
+
+    xbox_mean = np.mean(data["XBOX"])
+
+    # t test
+    t_statistic, p_value = ttest_1samp(data["HAND"], xbox_mean, alternative="less")
+    print("HAND")
+    print("t-statistic:", t_statistic)
+    print("p-value:", p_value)
+
+    t_statistic, p_value = ttest_1samp(data["GUI"], xbox_mean, alternative="less")
+    print("GUI")
+    print("t-statistic:", t_statistic)
+    print("p-value:", p_value)
 
     # plot
     plt.figure()
     a = plt.axes()
-    a.boxplot(data, labels=MODALITY.keys())
+    a.plot([0, 3], [xbox_mean, xbox_mean], color="red", linestyle="-")
+    a.boxplot([data["GUI"], data["HAND"]], labels=["GUI", "HAND"])
     a.set_title("Ease of Use with Prior Gaming Experience")
     a.set_ylabel("Ease of Use")
     a.set_xlabel("Modality")
-    a.set_xticklabels(MODALITY.keys())
+    a.set_xticklabels(["GUI", "HAND"])
     a.set_ylim([1, 5])
-    plt.savefig("h2_ease_of_use_games.png")
+    a.set_xlim([0, 3])
+    a.legend(["XBOX Mean", "GUI", "HAND"])
 
-def hypothesis_3():
+    # plt.figure()
+    # a = plt.axes()
+    # a.boxplot(data, labels=MODALITY.keys())
+    # a.set_title("Ease of Use with Prior Gaming Experience")
+    # a.set_ylabel("Ease of Use")
+    # a.set_xlabel("Modality")
+    # a.set_xticklabels(MODALITY.keys())
+    # a.set_ylim([1, 5])
+
+    if bool_save:
+        plt.savefig("h2_ease_of_use_games.png")
+    else:
+        plt.show()
+
+def hypothesis_3(bool_save=False):
     """
     Hypothesis 3: People without prior gaming experience would find GUI
     to require least effort
@@ -186,12 +216,17 @@ def hypothesis_3():
     a.set_xlabel("Modality")
     a.set_xticklabels(["Hand", "Xbox"])
     a.set_ylim([1, 5])
+    a.set_xlim([0, 3])
     a.legend(["GUI Mean", "Hand", "Xbox"])
     # plt.show()
-    plt.savefig("h3_ease_of_use_no_games.png")
+
+    if bool_save:
+        plt.savefig("h3_ease_of_use_no_games.png")
+    else:
+        plt.show()
 
 
-def hypothesis_4():
+def hypothesis_4(bool_save=False):
     """
     Hypothesis 4: People who are visual learners would find the GUI
     method to require the least effort, compared to those with other
@@ -244,10 +279,14 @@ def hypothesis_4():
     a.set_xticklabels(["Hand", "Xbox"])
     a.set_xlim(0, 3)
     a.set_ylim(1, 5 )
-    plt.legend()
-    plt.savefig("h4_ease_of_use_visual.png")
+    plt.legend(["GUI", "Hand", "Xbox"])
 
-def hypothesis_5():
+    if bool_save:
+        plt.savefig("h4_ease_of_use_visual.png")
+    else:
+        plt.show()
+
+def hypothesis_5(bool_save=False):
     """
     Hypothesis 5: People who are kinesthetic learners would find the
     hand gesture method to require the least effort, compared to those
@@ -288,6 +327,7 @@ def hypothesis_5():
     print("p-value:", p_value)
 
     # plot
+    plt.figure()
     a = plt.axes()
     a.plot([0, 3], [hand_mean, hand_mean], color="red", label="hand mean")
     a.boxplot([gui_data, xbox_data])
@@ -300,12 +340,15 @@ def hypothesis_5():
     a.set_xlim(0, 3)
     # plt.grid()
 
-    plt.savefig("h5_ease_of_use_kinesthetic.png")
+    if bool_save:
+        plt.savefig("h5_ease_of_use_kinesthetic.png")
+    else:
+        plt.show()
 
 if __name__ == '__main__':
 
-    hypothesis_2()
-    hypothesis_3()
-    hypothesis_4()
-    hypothesis_5()
+    hypothesis_2(True)
+    # hypothesis_3()
+    # hypothesis_4()
+    # hypothesis_5()
 
