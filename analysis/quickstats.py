@@ -125,7 +125,15 @@ def hypothesis_2():
         print(" ")
 
     # plot
-
+    plt.figure()
+    a = plt.axes()
+    a.boxplot(data, labels=MODALITY.keys())
+    a.set_title("Ease of Use with Prior Gaming Experience")
+    a.set_ylabel("Ease of Use")
+    a.set_xlabel("Modality")
+    a.set_xticklabels(MODALITY.keys())
+    a.set_ylim([1, 5])
+    plt.show()
 
 def hypothesis_3():
     """
@@ -152,9 +160,9 @@ def hypothesis_3():
         means[key] = [np.mean(no_game_eou), np.mean(plays_game_eou)]
         data[key] = [no_game_eou, plays_game_eou]
 
-    gui_mean = means["GUI"][1]
-    hand_data = data["HAND"][1]
-    xbox_data = data["XBOX"][1]
+    gui_mean = means["GUI"][0]
+    hand_data = data["HAND"][0]
+    xbox_data = data["XBOX"][0]
 
     print(" ")
     print("=" * 10 + " HYPOTHESIS 3 " + "=" * 10)
@@ -167,6 +175,19 @@ def hypothesis_3():
     print("XBOX")
     print("t-statistic:", t_statistic)
     print("p-value:", p_value)
+
+    # plot
+    plt.figure()
+    a = plt.axes()
+    a.plot([0, 3], [gui_mean, gui_mean], color="red", label="GUI Mean")
+    a.boxplot([hand_data, xbox_data], labels=["Hand", "Xbox"])
+    a.set_title("Ease of Use without Prior Gaming Experience")
+    a.set_ylabel("Ease of Use")
+    a.set_xlabel("Modality")
+    a.set_xticklabels(["Hand", "Xbox"])
+    a.set_ylim([1, 5])
+    a.legend(["GUI Mean", "Hand", "Xbox"])
+    plt.show()
 
 
 def hypothesis_4():
