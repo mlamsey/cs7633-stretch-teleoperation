@@ -133,7 +133,7 @@ def hypothesis_2():
     a.set_xlabel("Modality")
     a.set_xticklabels(MODALITY.keys())
     a.set_ylim([1, 5])
-    plt.show()
+    plt.savefig("h2_ease_of_use_games.png")
 
 def hypothesis_3():
     """
@@ -187,7 +187,8 @@ def hypothesis_3():
     a.set_xticklabels(["Hand", "Xbox"])
     a.set_ylim([1, 5])
     a.legend(["GUI Mean", "Hand", "Xbox"])
-    plt.show()
+    # plt.show()
+    plt.savefig("h3_ease_of_use_no_games.png")
 
 
 def hypothesis_4():
@@ -244,7 +245,7 @@ def hypothesis_4():
     a.set_xlim(0, 3)
     a.set_ylim(1, 5 )
     plt.legend()
-    plt.show()
+    plt.savefig("h4_ease_of_use_visual.png")
 
 def hypothesis_5():
     """
@@ -299,7 +300,7 @@ def hypothesis_5():
     a.set_xlim(0, 3)
     # plt.grid()
 
-    plt.show()
+    plt.savefig("h5_ease_of_use_kinesthetic.png")
 
 if __name__ == '__main__':
 
