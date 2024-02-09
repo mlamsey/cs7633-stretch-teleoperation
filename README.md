@@ -9,6 +9,8 @@ Matthew Lamsey, Houriyeh Majditehran, Chuxuan (Sophie) Yang
 
 We present a framework for controlling a Hello Robot Stretch using hand gestures as an input. We leverage [open-source hand pose estimation software](https://google.github.io/mediapipe/) to collect control input from a camera mounted on a desk near the robot. This allows users to control a robot for pick-and-place tasks in an intuitive manner, without the need for peripheral input hardware.
 
+![Path Planner](img/gestures.png)
+
 # Launch
 
 ## Booting up a Stretch
