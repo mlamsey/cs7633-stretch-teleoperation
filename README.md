@@ -1,4 +1,4 @@
-# CS7633 Human-Robot Interaction
+# CS7633 Project: Stretch Teleoperation Comparison
 
 Course Project for CS7633 Human-Robot Interaction at the Georgia Institute of Technology
 
@@ -7,7 +7,7 @@ Matthew Lamsey, Houriyeh Majditehran, Chuxuan (Sophie) Yang
 
 # Description
 
-We present a framework for controlling a Hello Robot Stretch using hand gestures as an input. We leverage [open-source hand pose estimation software](https://google.github.io/mediapipe/) to collect control input from a camera mounted on a desk near the robot. This allows users to control a robot for pick-and-place tasks in an intuitive manner, without the need for peripheral input hardware.
+We present a framework for controlling a Hello Robot Stretch using several input modalities, including an XBox controller, an onscreen GUI, and hand gestures. We leverage [open-source hand pose estimation software](https://google.github.io/mediapipe/) to collect control input from a camera mounted on a desk near the robot. This allows users to control a robot for pick-and-place tasks in an intuitive manner, without the need for peripheral input hardware.
 
 # Launch
 
